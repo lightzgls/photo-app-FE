@@ -13,6 +13,7 @@ import UserDetail from "./components/UserDetail";
 import UserList from "./components/UserList";
 import UserPhotos from "./components/UserPhotos";
 import LoginRegister from "./components/LoginRegister"; // Imports the new index.jsx wrapper
+import AddPhoto from "./components/PhotoUpload";
 
 const App = (props) => {
   // Add state to track the logged-in user
@@ -65,7 +66,16 @@ const App = (props) => {
                     )
                   }
                 />
-
+                <Route
+                  path="/photos/new"
+                  element={
+                    loggedInUser ? (
+                      <AddPhoto />
+                    ) : (
+                      <Navigate to="/login-register" />
+                    )
+                  }
+                />
                 <Route
                   path="/photos/:userId"
                   element={

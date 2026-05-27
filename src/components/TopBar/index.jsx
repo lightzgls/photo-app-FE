@@ -13,7 +13,9 @@ function TopBar({ loggedInUser, setLoggedInUser }) {
   // This is the user you are currently viewing (from your existing code)
   const viewedUser = location.state?.userData;
   const isPhotos = location.pathname.includes("/photos/");
-
+  const handleUpload = () => {
+    navigate("/photos/new")
+  }
   // Function to handle the logout process
   const handleLogout = async () => {
     try {
@@ -56,6 +58,9 @@ function TopBar({ loggedInUser, setLoggedInUser }) {
               <Typography variant="h6" color="inherit">
                 Hi {loggedInUser.first_name}
               </Typography>
+              <Button onClick={handleUpload}>
+                Upload
+              </Button>
               <Button color="inherit" variant="outlined" onClick={handleLogout}>
                 Logout
               </Button>
