@@ -1,6 +1,4 @@
 import React, { useState } from "react";
-import { AppBar, Toolbar, Typography, Button } from "@mui/material";
-
 export default function AddPhoto({ onUploadSuccess }) {
   const [file, setFile] = useState(null);
   const handleSubmit = async (e) => {
