@@ -1,13 +1,12 @@
 import React, { useState } from "react";
 import { Button, TextField, Typography, Box } from "@mui/material";
 
-const Register = ({ setIsLoginView }) => {
-  // Required Info
+const Register = () => {
   const [loginName, setLoginName] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
-
-  // Additional Info for UserDetail
   const [location, setLocation] = useState("");
   const [description, setDescription] = useState("");
   const [occupation, setOccupation] = useState("");
@@ -20,31 +19,39 @@ const Register = ({ setIsLoginView }) => {
     setError("");
     setSuccessMsg("");
 
+    // Check passwords match
+    if (password !== confirmPassword) {
+      setError("Passwords do not match");
+      return;
+    }
+
     try {
-      // NOTE: Looking at your backend screenshot, your index.js expects plural "/api/users/register"
-      const apiBase = process.env.REACT_APP_API_URL;
-      const response = await fetch(`${apiBase}/api/users/register`, {
+      const apiBase = process.env.REACT_APP_API_URL || "http://localhost:8081";
+      const response = await fetch(`${apiBase}/api/users/`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           login_name: loginName,
+          password,
           first_name: firstName,
           last_name: lastName,
-          location: location,
-          description: description,
-          occupation: occupation,
+          location,
+          description,
+          occupation,
         }),
       });
 
       if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || "Registration failed");
+        const msg = await response.text();
+        throw new Error(msg || "Registration failed");
       }
 
       setSuccessMsg("Account created successfully! You can now log in.");
 
-      // Clear the form fields
+      // Clear form
       setLoginName("");
+      setPassword("");
+      setConfirmPassword("");
       setFirstName("");
       setLastName("");
       setLocation("");
@@ -56,11 +63,7 @@ const Register = ({ setIsLoginView }) => {
   };
 
   return (
-    <Box
-      component="form"
-      onSubmit={handleRegister}
-      sx={{ width: "100%", mt: 1 }}
-    >
+    <Box component="form" onSubmit={handleRegister} sx={{ width: "100%", mt: 1 }}>
       {error && (
         <Typography color="error" align="center">
           {error}
@@ -72,10 +75,9 @@ const Register = ({ setIsLoginView }) => {
         </Typography>
       )}
 
-      {/* --- REQUIRED FIELDS --- */}
+      {/* Required fields */}
       <TextField
         label="Login Name *"
-        variant="outlined"
         fullWidth
         margin="normal"
         value={loginName}
@@ -83,8 +85,25 @@ const Register = ({ setIsLoginView }) => {
         required
       />
       <TextField
+        label="Password *"
+        type="password"
+        fullWidth
+        margin="normal"
+        value={password}
+        onChange={(e) => setPassword(e.target.value)}
+        required
+      />
+      <TextField
+        label="Confirm Password *"
+        type="password"
+        fullWidth
+        margin="normal"
+        value={confirmPassword}
+        onChange={(e) => setConfirmPassword(e.target.value)}
+        required
+      />
+      <TextField
         label="First Name *"
-        variant="outlined"
         fullWidth
         margin="normal"
         value={firstName}
@@ -93,7 +112,6 @@ const Register = ({ setIsLoginView }) => {
       />
       <TextField
         label="Last Name *"
-        variant="outlined"
         fullWidth
         margin="normal"
         value={lastName}
@@ -101,10 +119,9 @@ const Register = ({ setIsLoginView }) => {
         required
       />
 
-      {/* --- OPTIONAL EXTRA FIELDS --- */}
+      {/* Optional fields */}
       <TextField
         label="Location"
-        variant="outlined"
         fullWidth
         margin="normal"
         value={location}
@@ -112,7 +129,6 @@ const Register = ({ setIsLoginView }) => {
       />
       <TextField
         label="Occupation"
-        variant="outlined"
         fullWidth
         margin="normal"
         value={occupation}
@@ -120,7 +136,6 @@ const Register = ({ setIsLoginView }) => {
       />
       <TextField
         label="Description"
-        variant="outlined"
         fullWidth
         margin="normal"
         multiline
@@ -129,18 +144,8 @@ const Register = ({ setIsLoginView }) => {
         onChange={(e) => setDescription(e.target.value)}
       />
 
-      <Button
-        type="submit"
-        variant="contained"
-        size="large"
-        fullWidth
-        sx={{ mt: 3, mb: 2 }}
-      >
+      <Button type="submit" variant="contained" size="large" fullWidth sx={{ mt: 3, mb: 2 }}>
         Register Me
-      </Button>
-
-      <Button color="secondary" fullWidth onClick={() => setIsLoginView(true)}>
-        Already have an account? Login here.
       </Button>
     </Box>
   );

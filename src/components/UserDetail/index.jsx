@@ -1,35 +1,48 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { Typography, Button } from "@mui/material";
-
+import { Link, useParams } from "react-router-dom";
+import fetchModel from "../../lib/fetchModelData";
 import "./styles.css";
-import { Link, useLocation, useParams } from "react-router-dom";
-/**
- * Define UserDetail, a React component of Project 4.
- */
+
 function UserDetail() {
   const { userId } = useParams();
-  const location = useLocation();
-  const userData = location.state.userData;
+  const [user, setUser] = useState(null);
+
+  useEffect(() => {
+    async function fetchData() {
+      try {
+        const apiBase = process.env.REACT_APP_API_URL || "http://localhost:8081";
+        const response = await fetchModel(`${apiBase}/api/users/${userId}`);
+        setUser(response.data);
+      } catch (error) {
+        console.error("Error fetching user:", error);
+      }
+    }
+    fetchData();
+  }, [userId]);
+
+  if (!user) return <Typography>Loading...</Typography>;
+
   return (
     <>
-      <Typography variant="body1">
-        {`${userData.first_name} ${userData.last_name}`}
-        <br />
-        <strong>Location: </strong> {userData.location}
-        <br />
-        <strong>Occupation: </strong> {userData.occupation}
-        <br />
-        <strong>Desciption: </strong> {userData.description}
-        <br />
-        <Button
-          variant="contained"
-          component={Link}
-          to={`/photos/${userId}`}
-          state={{ userData }}
-        >
-          See Photos
-        </Button>
+      <Typography variant="h5">
+        {user.first_name} {user.last_name}
       </Typography>
+      <Typography variant="body1" sx={{ mt: 1 }}>
+        <strong>Location:</strong> {user.location}
+        <br />
+        <strong>Occupation:</strong> {user.occupation}
+        <br />
+        <strong>Description:</strong> {user.description}
+      </Typography>
+      <Button
+        variant="contained"
+        component={Link}
+        to={`/photos/${userId}`}
+        sx={{ mt: 2 }}
+      >
+        See Photos
+      </Button>
     </>
   );
 }
